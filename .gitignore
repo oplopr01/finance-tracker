@@ -1,0 +1,52 @@
+# ========================
+# Node modules
+# ========================
+node_modules/
+client/node_modules/
+server/node_modules/
+
+
+# ========================
+# Logs
+# ========================
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+
+
+# ========================
+# OS files
+# ========================
+.DS_Store
+Thumbs.db
+
+# ========================
+# Editor files
+# ========================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ========================
+# Coverage / Testing
+# ========================
+coverage/
+
+# ========================
+# Misc
+# ========================
+*.pid
+*.seed
+*.pid.lock
+
+# ========================
+# Optional (lock files if needed)
+# ========================
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
