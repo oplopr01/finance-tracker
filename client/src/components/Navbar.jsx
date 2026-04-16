@@ -4,10 +4,10 @@ import { logout } from "../utils/auth";
 
 function Navbar() {
   const [user, setUser] = useState(null);
-
   useEffect(() => {
     API.get("/auth/profile").then(res => setUser(res.data));
   }, []);
+
   return (
     <div className="flex justify-between items-center px-6 py-4 bg-gray-900 text-white shadow">
       <h1 className="text-lg font-bold">💰 Finance Tracker</h1>

@@ -8,6 +8,7 @@ import Profile from "./pages/Profile";
 function App() {
   return (
     <BrowserRouter>
+    <Toaster position="top-right" />
       <Routes>
         <Route path="/" element={isLoggedIn() ? <Dashboard /> : <Navigate to="/login" />} />
         <Route path="/login" element={<Login />} />

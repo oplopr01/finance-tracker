@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import API from "../services/api";
 import Navbar from "../components/Navbar";
+import CategoryChart from "../components/CategoryChart";
+// import MonthlyChart from "../components/MonthlyChart";
 
 function Dashboard() {
   const [transactions, setTransactions] = useState([]);
@@ -29,11 +31,21 @@ function Dashboard() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // ✅ validation
+    if (!form.amount || !form.type) {
+      return alert("Amount and type required");
+    }
+
+    const payload = {
+      ...form,
+      amount: Number(form.amount), // ✅ ensure number
+    };
+
     if (editingId) {
-      await API.put(`/transactions/${editingId}`, form);
+      await API.put(`/transactions/${editingId}`, payload);
       setEditingId(null);
     } else {
-      await API.post("/transactions", form);
+      await API.post("/transactions", payload);
     }
 
     setForm({ amount: "", type: "income", category: "", note: "" });
@@ -61,7 +73,7 @@ function Dashboard() {
 
       <div className="p-6 max-w-4xl mx-auto">
 
-        {/* Summary Cards */}
+        {/* Summary */}
         <div className="grid grid-cols-3 gap-4 mb-6">
           <div className="bg-green-500 text-white p-4 rounded">
             Income: {summary.income}
@@ -74,6 +86,14 @@ function Dashboard() {
           </div>
         </div>
 
+              
+
+             <div className="grid md:grid-cols-2 gap-6">
+  <CategoryChart transactions={transactions} />
+  {/* <MonthlyChart transactions={transactions} /> */}
+
+</div>
+
         {/* Form */}
         <form
           onSubmit={handleSubmit}
@@ -83,40 +103,94 @@ function Dashboard() {
             value={form.amount}
             className="border p-2 flex-1 w-full"
             placeholder="Amount"
-            onChange={(e) => setForm({ ...form, amount: e.target.value })}
+            onChange={(e) =>
+              setForm({ ...form, amount: e.target.value })
+            }
           />
 
           <select
             value={form.type}
             className="border p-2 w-full md:w-auto"
-            onChange={(e) => setForm({ ...form, type: e.target.value })}
+            onChange={(e) =>
+              setForm({ ...form, type: e.target.value })
+            }
           >
-            <option value="income">Income</option>
-            <option value="expense">Expense</option>
+            <option value="income">Credit</option>
+            <option value="expense">Debit</option>
+          </select>
+
+          <select
+            value={form.category}
+            className="border p-2 w-full md:w-auto"
+            onChange={(e) =>
+              setForm({ ...form, category: e.target.value })
+            }
+          >
+            <option value="">Category</option>
+            <option value="Salary">Salary</option>
+            <option value="Food">Food</option>
+            <option value="Travel">Travel</option>
+            <option value="Shopping">Shopping</option>
+            <option value="Bills">Bills</option>
           </select>
 
           <input
-            value={form.category}
+            value={form.note}
             className="border p-2 flex-1 w-full"
-            placeholder="Category"
-            onChange={(e) => setForm({ ...form, category: e.target.value })}
+            placeholder="Note"
+            onChange={(e) =>
+              setForm({ ...form, note: e.target.value })
+            }
           />
 
           <button className="bg-blue-500 text-white px-4 py-2 rounded">
             {editingId ? "Update" : "Add"}
           </button>
+
+          {/* ✅ Cancel Button */}
+          {editingId && (
+            <button
+              type="button"
+              onClick={() => {
+                setEditingId(null);
+                setForm({
+                  amount: "",
+                  type: "income",
+                  category: "",
+                  note: "",
+                });
+              }}
+              className="bg-gray-400 text-white px-4 py-2 rounded"
+            >
+              Cancel
+            </button>
+          )}
         </form>
 
         {/* Transactions */}
         <div className="bg-white rounded shadow">
+
+          {/* ✅ Empty State */}
+          {transactions.length === 0 && (
+            <p className="text-center p-4 text-gray-500">
+              No transactions yet
+            </p>
+          )}
+
           {transactions.map((t) => (
             <div
               key={t._id}
               className="flex justify-between items-center p-3 border-b"
             >
               <div>
-                <p className="font-semibold">{t.category}</p>
-                <p className="text-sm text-gray-500">{t.note}</p>
+                {/* ✅ Type + Category */}
+                <p className="font-semibold">
+                  {t.type === "income" ? "Credit" : "Debit"} • {t.category}
+                </p>
+
+                <p className="text-sm text-gray-500">
+                  {t.note || "--"}
+                </p>
               </div>
 
               <div className="text-right">
