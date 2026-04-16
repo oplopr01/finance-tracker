@@ -30,6 +30,13 @@ function Dashboard() {
     fetchData();
   }, []);
 
+  const formatDate = (date) => {
+    return new Date(date).toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -195,7 +202,9 @@ function Dashboard() {
                 </p>
 
                 <p className="text-sm text-gray-500">
-                  {t.note || "--"}
+                  {t.note || "--"} <span className="text-xs text-gray-400">
+                    • {formatDate(t.createdAt)}
+                  </span>
                 </p>
               </div>
 
