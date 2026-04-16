@@ -80,6 +80,21 @@ function Dashboard() {
     }
   };
 
+  const getSpendingVelocity = () => {
+  const last7Days = transactions.filter((t) => {
+    const d = new Date(t.createdAt);
+    const now = new Date();
+    return (
+      t.type === "expense" &&
+      (now - d) / (1000 * 60 * 60 * 24) <= 7
+    );
+  });
+
+  const total = last7Days.reduce((sum, t) => sum + t.amount, 0);
+
+  return Math.round(total / 7);
+};
+
   const handlePin = async (id) => {
   await API.patch(`/transactions/${id}/pin`);
   fetchData();
@@ -108,7 +123,12 @@ const sortedTransactions = [
           </div>
         </div>
 
-
+<div className="bg-white p-4 rounded shadow mb-6">
+  <p className="text-gray-500 text-sm">Spending Velocity For The Week</p>
+  <p className="text-xl font-bold text-red-500">
+    ₹{getSpendingVelocity()} / day
+  </p>
+</div>
 
         <div className="grid md:grid-cols-2 gap-6">
           <CategoryChart transactions={transactions} />
