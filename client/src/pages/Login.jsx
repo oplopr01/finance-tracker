@@ -23,7 +23,6 @@ function Login() {
             placeholder="Email"
             onChange={(e) => setForm({ ...form, email: e.target.value })}
           />
-          <h1 className="text-red-500 text-3xl">Test</h1>
           <input
             type="password"
             className="p-2 rounded bg-white/20 outline-none"
