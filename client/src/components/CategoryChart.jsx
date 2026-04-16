@@ -72,6 +72,14 @@ function CategoryChart({ transactions }) {
               contentStyle={{
                 borderRadius: "10px",
                 border: "none",
+                backgroundColor: "#1f2937", // dark gray
+                color: "#fff",
+              }}
+              itemStyle={{
+                color: "#fff",
+              }}
+              labelStyle={{
+                color: "#9ca3af", // light gray label
               }}
             />
           </PieChart>
