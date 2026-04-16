@@ -1,9 +1,9 @@
 import { useState } from "react";
 import API from "../services/api";
-
+import { useNavigate } from "react-router-dom";
 function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
-
+  const navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
     const res = await API.post("/auth/login", form);
@@ -34,6 +34,14 @@ function Login() {
           <button className="bg-white text-indigo-600 font-semibold p-2 rounded hover:bg-gray-200">
             Login
           </button>
+
+           {/* Register Button */}
+        <button
+          onClick={() => navigate("/register")}
+          className="mt-4 w-full border border-white p-2 rounded hover:bg-white hover:text-indigo-600 transition"
+        >
+          Create Account
+        </button>
         </form>
       </div>
 
