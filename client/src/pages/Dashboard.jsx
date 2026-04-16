@@ -80,6 +80,15 @@ function Dashboard() {
     }
   };
 
+  const handlePin = async (id) => {
+  await API.patch(`/transactions/${id}/pin`);
+  fetchData();
+};
+const sortedTransactions = [
+  ...transactions.filter(t => t.isPinned),
+  ...transactions.filter(t => !t.isPinned)
+];
+
   return (
     <div className="bg-gray-100 min-h-screen">
       <Navbar />
@@ -184,17 +193,23 @@ function Dashboard() {
         <div className="bg-white rounded shadow">
 
           {/* ✅ Empty State */}
-          {transactions.length === 0 && (
+          {sortedTransactions.length === 0 && (
             <p className="text-center p-4 text-gray-500">
               No transactions yet
             </p>
           )}
 
-          {transactions.map((t) => (
+          {sortedTransactions.map((t) => (
             <div
               key={t._id}
               className="flex justify-between items-center p-3 border-b"
             >
+              <button
+  onClick={() => handlePin(t._id)}
+  className="text-yellow-500"
+>
+  {t.isPinned ? "★" : "☆"}
+</button>
               <div>
                 {/* ✅ Type + Category */}
                 <p className="font-semibold">

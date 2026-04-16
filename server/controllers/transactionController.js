@@ -112,3 +112,18 @@ exports.updateTransaction = async (req, res) => {
     res.status(500).json({ message: "Error updating transaction" });
   }
 };
+
+exports.togglePin = async (req, res) => {
+  const t = await Transaction.findById(req.params.id);
+
+  if (!t) return res.status(404).json({ message: "Not found" });
+
+  if (t.userId.toString() !== req.user._id.toString()) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  t.isPinned = !t.isPinned;
+  await t.save();
+
+  res.json(t);
+};
