@@ -3,7 +3,7 @@ import API from "../services/api";
 import Navbar from "../components/Navbar";
 import CategoryChart from "../components/CategoryChart";
 // import MonthlyChart from "../components/MonthlyChart";
-
+import toast from "react-hot-toast";
 function Dashboard() {
   const [transactions, setTransactions] = useState([]);
   const [summary, setSummary] = useState({});
@@ -41,12 +41,17 @@ function Dashboard() {
       amount: Number(form.amount), // ✅ ensure number
     };
 
-    if (editingId) {
-      await API.put(`/transactions/${editingId}`, payload);
-      setEditingId(null);
-    } else {
-      await API.post("/transactions", payload);
-    }
+    try {
+  if (editingId) {
+    await API.put(`/transactions/${editingId}`, payload);
+    toast.success("Transaction updated");
+  } else {
+    await API.post("/transactions", payload);
+    toast.success("Transaction added");
+  }
+} catch {
+  toast.error("Something went wrong");
+}
 
     setForm({ amount: "", type: "income", category: "", note: "" });
     fetchData();
@@ -63,9 +68,14 @@ function Dashboard() {
   };
 
   const handleDelete = async (id) => {
+  try {
     await API.delete(`/transactions/${id}`);
+    toast.success("Deleted successfully");
     fetchData();
-  };
+  } catch {
+    toast.error("Delete failed");
+  }
+};
 
   return (
     <div className="bg-gray-100 min-h-screen">
