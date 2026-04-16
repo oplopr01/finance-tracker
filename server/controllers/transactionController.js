@@ -80,3 +80,35 @@ exports.getSummary = async (req, res) => {
         res.status(500).json({ message: "Error fetching summary" });
     }
 };
+
+exports.updateTransaction = async (req, res) => {
+  try {
+    const { amount, type, category, note, date } = req.body;
+
+    // basic validation
+    if (!amount || !type) {
+      return res.status(400).json({ message: "Amount and type are required" });
+    }
+
+    if (!["income", "expense"].includes(type)) {
+      return res.status(400).json({ message: "Invalid type" });
+    }
+
+    const updated = await Transaction.findOneAndUpdate(
+      {
+        _id: req.params.id,
+        userId: req.user._id, // 🔒 security
+      },
+      { amount, type, category, note, date },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ message: "Transaction not found" });
+    }
+
+    res.json(updated);
+  } catch (error) {
+    res.status(500).json({ message: "Error updating transaction" });
+  }
+};
