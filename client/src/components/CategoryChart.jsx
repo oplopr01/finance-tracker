@@ -4,6 +4,7 @@ import {
   Pie,
   Cell,
   ResponsiveContainer,
+  Tooltip,
 } from "recharts";
 
 function CategoryChart({ transactions }) {
@@ -29,15 +30,15 @@ function CategoryChart({ transactions }) {
 
   if (data.length === 0) {
     return (
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow text-center text-gray-500">
+      <div className="bg-white p-6 rounded-2xl shadow text-center text-gray-500">
         No expense data
       </div>
     );
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow relative">
-      <h2 className="text-lg font-semibold mb-4 dark:text-white">
+    <div className="bg-white p-6 rounded-2xl shadow">
+      <h2 className="text-lg font-semibold mb-4">
         Expense Distribution
       </h2>
 
@@ -57,22 +58,43 @@ function CategoryChart({ transactions }) {
                 <Cell
                   key={index}
                   fill={COLORS[index % COLORS.length]}
-                  opacity={activeIndex === index ? 1 : 0.5} // 🔥 hover effect
+                  opacity={activeIndex === index ? 1 : 0.5}
                 />
               ))}
             </Pie>
+
+            {/* ✅ Tooltip added */}
+            <Tooltip
+              formatter={(value, name, props) => {
+                const percent = ((value / total) * 100).toFixed(1);
+                return [`₹${value} (${percent}%)`, name];
+              }}
+              contentStyle={{
+                borderRadius: "10px",
+                border: "none",
+              }}
+            />
           </PieChart>
         </ResponsiveContainer>
 
-        {/* 🔥 Center Total */}
+        {/* Center Total */}
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Total
-          </p>
-          <p className="text-xl font-bold dark:text-white">
-            ₹{total}
-          </p>
+          <p className="text-sm text-gray-500">Total</p>
+          <p className="text-xl font-bold">₹{total}</p>
         </div>
+      </div>
+
+      {/* ✅ Custom Legend */}
+      <div className="mt-4 flex flex-wrap gap-4 justify-center">
+        {data.map((item, index) => (
+          <div key={index} className="flex items-center gap-2 text-sm">
+            <div
+              className="w-3 h-3 rounded-full"
+              style={{ background: COLORS[index % COLORS.length] }}
+            />
+            <span>{item.name}</span>
+          </div>
+        ))}
       </div>
     </div>
   );

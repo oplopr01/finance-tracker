@@ -4,11 +4,13 @@ import Navbar from "../components/Navbar";
 import CategoryChart from "../components/CategoryChart";
 // import MonthlyChart from "../components/MonthlyChart";
 import toast from "react-hot-toast";
+import EditTransactionModal from "../components/EditTransactionModal";
+
 function Dashboard() {
   const [transactions, setTransactions] = useState([]);
   const [summary, setSummary] = useState({});
   const [editingId, setEditingId] = useState(null);
-
+  const [editData, setEditData] = useState(null);
   const [form, setForm] = useState({
     amount: "",
     type: "income",
@@ -42,40 +44,34 @@ function Dashboard() {
     };
 
     try {
-  if (editingId) {
-    await API.put(`/transactions/${editingId}`, payload);
-    toast.success("Transaction updated");
-  } else {
-    await API.post("/transactions", payload);
-    toast.success("Transaction added");
-  }
-} catch {
-  toast.error("Something went wrong");
-}
+      if (editingId) {
+        await API.put(`/transactions/${editingId}`, payload);
+        toast.success("Transaction updated");
+      } else {
+        await API.post("/transactions", payload);
+        toast.success("Transaction added");
+      }
+    } catch {
+      toast.error("Something went wrong");
+    }
 
     setForm({ amount: "", type: "income", category: "", note: "" });
     fetchData();
   };
 
   const handleEdit = (t) => {
-    setForm({
-      amount: t.amount,
-      type: t.type,
-      category: t.category,
-      note: t.note,
-    });
-    setEditingId(t._id);
+    setEditData(t);
   };
 
   const handleDelete = async (id) => {
-  try {
-    await API.delete(`/transactions/${id}`);
-    toast.success("Deleted successfully");
-    fetchData();
-  } catch {
-    toast.error("Delete failed");
-  }
-};
+    try {
+      await API.delete(`/transactions/${id}`);
+      toast.success("Deleted successfully");
+      fetchData();
+    } catch {
+      toast.error("Delete failed");
+    }
+  };
 
   return (
     <div className="bg-gray-100 min-h-screen">
@@ -96,13 +92,13 @@ function Dashboard() {
           </div>
         </div>
 
-              
 
-             <div className="grid md:grid-cols-2 gap-6">
-  <CategoryChart transactions={transactions} />
-  {/* <MonthlyChart transactions={transactions} /> */}
 
-</div>
+        <div className="grid md:grid-cols-2 gap-6">
+          <CategoryChart transactions={transactions} />
+          {/* <MonthlyChart transactions={transactions} /> */}
+
+        </div>
 
         {/* Form */}
         <form
@@ -235,6 +231,11 @@ function Dashboard() {
         </div>
 
       </div>
+      <EditTransactionModal
+        editData={editData}
+        setEditData={setEditData}
+        fetchData={fetchData}
+      />
     </div>
   );
 }
