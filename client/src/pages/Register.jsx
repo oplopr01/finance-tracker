@@ -1,6 +1,6 @@
 import { useState } from "react";
 import API from "../services/api";
-
+import { Link } from "react-router-dom";
 function Register() {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState("");
@@ -81,6 +81,12 @@ function Register() {
             {loading ? "Creating..." : "Register"}
           </button>
         </form>
+        <Link
+          to="/login"
+          className="mt-4 block text-center border border-white p-2 rounded hover:bg-white hover:text-indigo-600"
+        >
+          Go To Login Page
+        </Link>
       </div>
     </div>
   );
