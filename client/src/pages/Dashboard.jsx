@@ -143,20 +143,29 @@ function Dashboard() {
     }
   };
 
-  // ✅ PIN (optimized — no refetch)
-  const handlePin = async (id) => {
-    try {
-      const res = await API.patch(`/transactions/${id}/pin`);
 
-      setTransactions((prev) =>
-        prev.map((t) =>
-          t._id === id ? res.data : t
-        )
-      );
-    } catch {
-      toast.error("Pin failed");
-    }
-  };
+ const handlePin = async (id) => {
+  // 1. Optimistic update (instant UI change)
+  setTransactions((prev) =>
+    prev.map((t) =>
+      t._id === id ? { ...t, isPinned: !t.isPinned } : t
+    )
+  );
+
+  try {
+    // 2. API call in background
+    await API.patch(`/transactions/${id}/pin`);
+  } catch {
+    // 3. Revert if API fails
+    setTransactions((prev) =>
+      prev.map((t) =>
+        t._id === id ? { ...t, isPinned: !t.isPinned } : t
+      )
+    );
+
+    toast.error("Pin failed");
+  }
+};
   const ChartSkeleton = () => (
     <div className="bg-white p-6 rounded-2xl shadow h-[300px] animate-pulse">
       <div className="h-4 bg-gray-300 rounded w-1/3 mb-4"></div>
