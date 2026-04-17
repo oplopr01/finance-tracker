@@ -7,14 +7,14 @@ import DashboardSkeleton from "../components/DashboardSkeleton";
 const CategoryChart = lazy(() => import("../components/CategoryChart"));
 import { lazy, Suspense } from "react";
 function Dashboard() {
-  
+
   const [transactions, setTransactions] = useState([]);
   const fetchData = async () => {
     try {
       setLoading(true);
 
       const t = await API.get("/transactions");
-setTransactions(t.data);
+      setTransactions(t.data);
     } catch {
       toast.error("Failed to load data");
     } finally {
@@ -26,21 +26,21 @@ setTransactions(t.data);
     fetchData();
   }, []);
 
- const summary = useMemo(() => {
-  let income = 0;
-  let expense = 0;
+  const summary = useMemo(() => {
+    let income = 0;
+    let expense = 0;
 
-  transactions.forEach((t) => {
-    if (t.type === "income") income += t.amount;
-    else expense += t.amount;
-  });
+    transactions.forEach((t) => {
+      if (t.type === "income") income += t.amount;
+      else expense += t.amount;
+    });
 
-  return {
-    income,
-    expense,
-    balance: income - expense,
-  };
-}, [transactions]);
+    return {
+      income,
+      expense,
+      balance: income - expense,
+    };
+  }, [transactions]);
   const [editData, setEditData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -51,7 +51,7 @@ setTransactions(t.data);
     note: "",
   });
 
- 
+
   // ✅ Memoized sorting (BIG optimization)
   const sortedTransactions = useMemo(() => {
     return [
@@ -158,40 +158,40 @@ setTransactions(t.data);
     }
   };
   const ChartSkeleton = () => (
-  <div className="bg-white p-6 rounded-2xl shadow h-[300px] animate-pulse">
-    <div className="h-4 bg-gray-300 rounded w-1/3 mb-4"></div>
-    <div className="h-full bg-gray-200 rounded"></div>
-  </div>
-);
+    <div className="bg-white p-6 rounded-2xl shadow h-[300px] animate-pulse">
+      <div className="h-4 bg-gray-300 rounded w-1/3 mb-4"></div>
+      <div className="h-full bg-gray-200 rounded"></div>
+    </div>
+  );
 
   const useCountUp = (value) => {
-  const [display, setDisplay] = useState(0);
+    const [display, setDisplay] = useState(0);
 
-  useEffect(() => {
-    let start = 0;
-    const duration = 300;
-    const stepTime = 10;
-    const increment = value / (duration / stepTime);
+    useEffect(() => {
+      let start = 0;
+      const duration = 300;
+      const stepTime = 10;
+      const increment = value / (duration / stepTime);
 
-    const timer = setInterval(() => {
-      start += increment;
-      if (start >= value) {
-        setDisplay(value);
-        clearInterval(timer);
-      } else {
-        setDisplay(Math.floor(start));
-      }
-    }, stepTime);
+      const timer = setInterval(() => {
+        start += increment;
+        if (start >= value) {
+          setDisplay(value);
+          clearInterval(timer);
+        } else {
+          setDisplay(Math.floor(start));
+        }
+      }, stepTime);
 
-    return () => clearInterval(timer);
-  }, [value]);
+      return () => clearInterval(timer);
+    }, [value]);
 
-  return display;
-};
+    return display;
+  };
 
-const incomeAnim = useCountUp(summary.income);
-const expenseAnim = useCountUp(summary.expense);
-const balanceAnim = useCountUp(summary.balance);
+  const incomeAnim = useCountUp(summary.income);
+  const expenseAnim = useCountUp(summary.expense);
+  const balanceAnim = useCountUp(summary.balance);
   return (
     <div className="animate-fadeIn bg-gray-100 min-h-screen">
       <Navbar />
@@ -228,8 +228,8 @@ const balanceAnim = useCountUp(summary.balance);
             {/* Charts */}
             <div className="grid md:grid-cols-2 gap-6">
               <Suspense fallback={<ChartSkeleton />}>
-    <CategoryChart transactions={transactions} />
-  </Suspense>
+                <CategoryChart transactions={transactions} />
+              </Suspense>
 
             </div>
 
@@ -300,24 +300,26 @@ const balanceAnim = useCountUp(summary.balance);
                   key={t._id}
                   className="flex justify-between items-center p-3 border-b hover:bg-gray-50 transition"
                 >
-                  <button
-                    onClick={() => handlePin(t._id)}
-                    className="text-yellow-500"
-                  >
-                    {t.isPinned ? "★" : "☆"}
-                  </button>
+                  <div className="flex items-start gap-3">
+                    <button
+                      onClick={() => handlePin(t._id)}
+                      className="text-yellow-500 text-lg mt-1 hover:scale-110 transition"
+                    >
+                      {t.isPinned ? "★" : "☆"}
+                    </button>
 
-                  <div>
-                    <p className="font-semibold">
-                      {t.type === "income" ? "Credit" : "Debit"} • {t.category}
-                    </p>
+                    <div>
+                      <p className="font-semibold">
+                        {t.type === "income" ? "Credit" : "Debit"} • {t.category}
+                      </p>
 
-                    <p className="text-sm text-gray-500">
-                      {t.note || "--"} •{" "}
-                      <span className="text-xs text-gray-400">
-                        {formatDate(t.createdAt)}
-                      </span>
-                    </p>
+                      <p className="text-sm text-gray-500">
+                        {t.note || "--"} •{" "}
+                        <span className="text-xs text-gray-400">
+                          {formatDate(t.createdAt)}
+                        </span>
+                      </p>
+                    </div>
                   </div>
 
                   <div className="text-right">
