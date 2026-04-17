@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   PieChart,
   Pie,
@@ -108,4 +108,4 @@ function CategoryChart({ transactions }) {
   );
 }
 
-export default CategoryChart;
+export default React.memo(CategoryChart);

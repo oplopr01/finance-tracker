@@ -1,3 +1,4 @@
+import { useMemo, memo } from "react";
 import {
   BarChart,
   Bar,
@@ -8,24 +9,40 @@ import {
 } from "recharts";
 
 function MonthlyChart({ transactions }) {
-  const monthlyMap = {};
 
-  transactions.forEach((t) => {
-    const date = new Date(t.date);
-    const month = date.toLocaleString("default", { month: "short" });
+  // ✅ Memoized data calculation (BIG optimization)
+  const data = useMemo(() => {
+    const monthlyMap = {};
 
-    if (!monthlyMap[month]) {
-      monthlyMap[month] = { month, income: 0, expense: 0 };
-    }
+    transactions.forEach((t) => {
+      const date = new Date(t.createdAt); // ✅ FIX (use createdAt)
+      const monthIndex = date.getMonth();
+      const monthName = date.toLocaleString("default", {
+        month: "short",
+      });
 
-    if (t.type === "income") {
-      monthlyMap[month].income += t.amount;
-    } else {
-      monthlyMap[month].expense += t.amount;
-    }
-  });
+      if (!monthlyMap[monthIndex]) {
+        monthlyMap[monthIndex] = {
+          month: monthName,
+          income: 0,
+          expense: 0,
+          index: monthIndex, // for sorting
+        };
+      }
 
-  const data = Object.values(monthlyMap);
+      if (t.type === "income") {
+        monthlyMap[monthIndex].income += t.amount;
+      } else {
+        monthlyMap[monthIndex].expense += t.amount;
+      }
+    });
+
+    // ✅ Sort months properly (Jan → Dec)
+    return Object.values(monthlyMap).sort(
+      (a, b) => a.index - b.index
+    );
+
+  }, [transactions]);
 
   if (data.length === 0) {
     return (
@@ -45,25 +62,31 @@ function MonthlyChart({ transactions }) {
         <BarChart data={data} barGap={10}>
           <XAxis dataKey="month" />
           <YAxis />
+
+          {/* ✅ Improved tooltip */}
           <Tooltip
+            formatter={(value) => `₹${value}`}
             contentStyle={{
               borderRadius: "10px",
               border: "none",
+              backgroundColor: "#1f2937",
+              color: "#fff",
             }}
+            itemStyle={{ color: "#fff" }}
           />
 
           <Bar
             dataKey="income"
             fill="#22c55e"
-            radius={[6, 6, 0, 0]} // rounded bars
-            animationDuration={600}
+            radius={[6, 6, 0, 0]}
+            animationDuration={400} // faster animation
           />
 
           <Bar
             dataKey="expense"
             fill="#ef4444"
             radius={[6, 6, 0, 0]}
-            animationDuration={600}
+            animationDuration={400}
           />
         </BarChart>
       </ResponsiveContainer>
@@ -71,4 +94,5 @@ function MonthlyChart({ transactions }) {
   );
 }
 
-export default MonthlyChart;
+// ✅ Prevent unnecessary re-renders
+export default memo(MonthlyChart);

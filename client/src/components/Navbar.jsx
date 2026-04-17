@@ -8,22 +8,30 @@ function Navbar() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    API.get("/auth/profile")
-      .then((res) => setUser(res.data))
-      .catch(() => {
-        // optional: handle error silently
-      });
-  }, []);
+  const storedUser = localStorage.getItem("user");
+
+  if (storedUser) {
+    setUser(JSON.parse(storedUser)); // ✅ instant UI
+  }
+
+  // Optional: refresh in background
+  API.get("/auth/profile")
+    .then((res) => {
+      localStorage.setItem("user", JSON.stringify(res.data));
+      setUser(res.data); // ✅ no re-parse
+    })
+    .catch(() => {});
+}, []);
 
   return (
     <div className="flex justify-between items-center px-6 py-4 bg-gray-900 text-white shadow">
-      
-      {/* Logo / Title */}
+
+
       <h1 className="text-lg font-bold">💰 Finance Tracker</h1>
 
       <div className="flex items-center gap-4">
 
-        {/* ✅ Profile Link (NO reload) */}
+
         <Link
           to="/profile"
           className="flex items-center gap-2 hover:opacity-80 transition"
