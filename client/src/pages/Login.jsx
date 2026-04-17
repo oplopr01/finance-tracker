@@ -1,6 +1,7 @@
 import { useState } from "react";
 import API from "../services/api";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
   const navigate = useNavigate();
@@ -34,14 +35,13 @@ function Login() {
             Login
           </button>
 
-           {/* Register Button */}
-        <button
-          onClick={() => navigate("/register")}
-          className="mt-4 w-full border border-white p-2 rounded hover:bg-white hover:text-indigo-600 transition"
+        </form>
+        <Link
+          to="/register"
+          className="mt-4 block text-center border border-white p-2 rounded hover:bg-white hover:text-indigo-600"
         >
           Create Account
-        </button>
-        </form>
+        </Link>
       </div>
 
     </div>
