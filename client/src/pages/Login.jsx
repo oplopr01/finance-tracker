@@ -2,14 +2,35 @@ import { useState } from "react";
 import API from "../services/api";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
 function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await API.post("/auth/login", form);
-    localStorage.setItem("token", res.data.token);
-    window.location.href = "/";
+    if (!form.email || !form.password) {
+      return toast.error("Please fill all fields");
+    }
+
+    try {
+      setLoading(true);
+
+      const res = await API.post("/auth/login", form);
+
+      localStorage.setItem("token", res.data.token);
+
+      toast.success("Login successful");
+
+      navigate("/");
+
+    } catch (err) {
+      toast.error(
+        err.response?.data?.message || "Login failed"
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -31,8 +52,11 @@ function Login() {
             onChange={(e) => setForm({ ...form, password: e.target.value })}
           />
 
-          <button className="bg-white text-indigo-600 font-semibold p-2 rounded hover:bg-gray-200">
-            Login
+          <button
+            disabled={loading}
+            className="bg-white text-indigo-600 font-semibold p-2 rounded hover:bg-gray-200"
+          >
+            {loading ? "Logging in..." : "Login"}
           </button>
 
         </form>

@@ -23,7 +23,14 @@ API.interceptors.request.use((req) => {
 API.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401) {
+    const url = err.config.url;
+
+    // ❌ Skip for auth APIs
+    if (
+      err.response?.status === 401 &&
+      !url.includes("/auth/login") &&
+      !url.includes("/auth/register")
+    ) {
       localStorage.removeItem("token");
 
       toast.error("Session expired. Please login again");
